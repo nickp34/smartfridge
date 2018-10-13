@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.discoverorg.smartfridge.entity.BaseItem;
+import com.discoverorg.smartfridge.entity.Item;
 import com.discoverorg.smartfridge.service.SmartFridgeManagerImpl;
 
 import org.junit.Before;
@@ -21,108 +22,123 @@ public class SmartFridgeTest {
 
   @Test
   public void itemAdds() {
-    long type = 1;
-    String uuid = "b-1x";
-    String name = "Chiquita Banana";
-    Double fill = 100.00;
-    smartFridge.handleItemAdded(type, uuid, name, fill);
-    smartFridge.handleItemAdded(type, uuid, name, fill);
-    // assertEquals(fill, smartFridge.getFillFactor(type));
-    assertEquals(1, smartFridge.getItems(fill).length);
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(100.00);
+    i.setUUID("b-1x");
+    i.setName("Banana");
 
-    uuid = "b-1xx";
-    smartFridge.handleItemAdded(type, uuid, name, fill);
-    assertEquals(2, smartFridge.getItems(fill).length);
+    /* check hash works */
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+    assertEquals(1, smartFridge.getItems(i.getFillFactor()).length);
+
+    i.setUUID("b-1xxxx");
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+    assertEquals(2, smartFridge.getItems(i.getFillFactor()).length);
+  }
+
+  @Test
+  public void itemRemoves() {
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(100.00);
+    i.setUUID("b-1x");
+    i.setName("Banana");
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+    smartFridge.handleItemRemoved(i.getUUID());
+    assertEquals(0, smartFridge.getItems(i.getFillFactor()).length);
   }
 
   @Test
   public void getItemsTypeBase() {
-    long type = 1;
-    String uuid = "dairy-1x";
-    String name = "Milk";
-    Double fill = 50.00;
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(100.00);
+    i.setUUID("b-1x");
+    i.setName("Banana");
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
     BaseItem b = new BaseItem();
-    b.setFillFactor(fill);
-    b.setType(type);
+    b.setFillFactor(i.getFillFactor());
+    b.setType(i.getType());
 
-    Object bFromList = smartFridge.getItems(fill)[0];
+    Object bFromList = smartFridge.getItems(i.getFillFactor())[0];
     assertEquals(b, bFromList);
   }
 
   @Test
   public void aveFillFactor() {
-    long type = 1;
-    String uuid = "b-1x";
-    String name = "Item 1";
-    Double fill = 10.00;
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(10.00);
+    i.setUUID("b-1x");
+    i.setName("Banana");
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
-    uuid = "c-1x";
-    type = 1;
-    fill = 30.00;
+    i.setUUID("c-1x");
+    i.setFillFactor(30.00);
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
     Double ave = 20.00;
     Double res = smartFridge.getFillFactor(1);
     assertEquals(ave, res);
 
     /* add another with different type.. ave shouldn't change */
-    uuid = "d-1x";
-    type = 2;
-    fill = 30.00;
+    i.setUUID("d-1x");
+    i.setType(2);
+    i.setFillFactor(30.00);
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
     assertEquals(ave, res);
 
     /**
     * add another of the same type, average should be ..
     * (10 + 30 + 1010545646878.17) / 3
     */
-    uuid = "e-1x";
-    type = 1;
-    fill = 1010545646878.17654564;
+    i.setUUID("e-1x");
+    i.setType(1);
+    i.setFillFactor(1010545646878.17654564);
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
     res = smartFridge.getFillFactor(1);
     assertNotEquals(ave, res);
 
-    ave = (10 + 30 + fill) / 3;
+    ave = (10 + 30 + i.getFillFactor()) / 3;
 
     /* Are the doubles really close */
-    boolean close = Math.abs(res - ave) < .00001;
-    assertTrue(close);
+    boolean nearly = Math.abs(res - ave) < .00001;
+    assertTrue(nearly);
   }
 
   @Test
   public void ignoresTracking() {
-    long type = 1;
-    String uuid = "b-1x";
-    String name = "Item 1";
-    Double fill = 10.00;
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(10.00);
+    i.setUUID("b-1x");
+    i.setName("Item 1");
 
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
-    uuid = "c-1x";
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    i.setUUID("c-1x");
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
-    uuid = "d-1x";
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    i.setUUID("d-1x");
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
     // Add a different type
-
-    uuid = "e-1x";
-    type = 2;
-    smartFridge.handleItemAdded(type, uuid, name, fill);
+    i.setUUID("e-1x");
+    i.setType(2);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
     assertEquals(4, smartFridge.getItems(10.00).length);
 
     // forget item type 1
     smartFridge.forgetItem(1);
-    // assertEquals(1, smartFridge.getItems(10.00).length);
+    assertEquals(1, smartFridge.getItems(10.00).length);
   }
 }

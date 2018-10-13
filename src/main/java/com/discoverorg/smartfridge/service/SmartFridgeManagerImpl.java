@@ -12,7 +12,9 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
 
   HashMap<String, Item> items = new HashMap<>();
 
-  public void handleItemRemoved(String itemUUID) {}
+  public void handleItemRemoved(String itemUUID) {
+    items.remove(itemUUID);
+  }
 
   /* Assuming we will just replace items based on their itemUUID */
   public void handleItemAdded(long itemType, String itemUUID, String name, Double fillFactor) {
@@ -42,7 +44,7 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
     for (Item item : items.values()) {
       if (itemType == item.getType()) {
         sum += item.getFillFactor();
-        count ++;
+        count++;
       }
     }
     return sum  / count;
