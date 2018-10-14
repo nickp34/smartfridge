@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.discoverorg.smartfridge.entity.BaseItem;
+import com.discoverorg.smartfridge.entity.AlertItem;
 import com.discoverorg.smartfridge.entity.Item;
 import com.discoverorg.smartfridge.service.SmartFridgeManagerImpl;
 
@@ -60,7 +60,7 @@ public class SmartFridgeTest {
 
     smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
 
-    BaseItem b = new BaseItem();
+    AlertItem b = new AlertItem();
     b.setFillFactor(i.getFillFactor());
     b.setType(i.getType());
 
@@ -140,5 +140,29 @@ public class SmartFridgeTest {
     // forget item type 1
     smartFridge.forgetItem(1);
     assertEquals(1, smartFridge.getItems(10.00).length);
+  }
+
+  @Test
+  public void testFillFactorAveWithZero() {
+    Item i = new Item();
+    i.setType(1);
+    i.setFillFactor(60.00);
+    i.setUUID("b-1x");
+    i.setName("Item 1");
+
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+
+    i.setUUID("c-1x");
+    i.setFillFactor(40.00);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+
+    Double ave = 50.00;
+    assertEquals(ave, smartFridge.getFillFactor(1));
+
+    // Add another with 0, average shouldnt' change
+    i.setUUID("d-1x");
+    i.setFillFactor(0.00);
+    smartFridge.handleItemAdded(i.getType(), i.getUUID(), i.getName(), i.getFillFactor());
+    assertEquals(ave, smartFridge.getFillFactor(1));
   }
 }

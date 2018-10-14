@@ -2,13 +2,12 @@ package com.discoverorg.smartfridge.entity;
 
 import java.util.Objects;
 
-public class BaseItem {
+public class AlertItem {
 
   private long type;
   private Double fillFactor;
 
-  public BaseItem() {
-  }
+  public AlertItem() {}
 
   public void setType(long type) {
     this.type = type;
@@ -39,7 +38,7 @@ public class BaseItem {
       return false;
     }
 
-    BaseItem baseItem = (BaseItem) obj;
-    return Objects.equals(type, baseItem.type) && Objects.equals(fillFactor, baseItem.fillFactor);
+    AlertItem AlertItem = (AlertItem) obj;
+    return Objects.equals(type, AlertItem.type) && Objects.equals(fillFactor, AlertItem.fillFactor);
   }
 }

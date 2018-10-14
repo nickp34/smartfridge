@@ -2,7 +2,7 @@ package com.discoverorg.smartfridge.entity;
 
 import java.util.Objects;
 
-public class Item extends BaseItem {
+public class Item extends AlertItem {
 
   private String UUID;
   private String name;

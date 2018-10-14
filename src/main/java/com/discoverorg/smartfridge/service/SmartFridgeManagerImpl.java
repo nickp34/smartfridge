@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.discoverorg.smartfridge.entity.BaseItem;
+import com.discoverorg.smartfridge.entity.AlertItem;
 import com.discoverorg.smartfridge.entity.Item;
 
 public class SmartFridgeManagerImpl implements SmartFridgeManager {
@@ -27,22 +27,22 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
   }
 
   public Object[] getItems(Double fillFactor) {
-    List<BaseItem> itemList = new ArrayList<>();
+    List<AlertItem> itemList = new ArrayList<>();
 
     for (Item item : items.values()) {
       if (fillFactor >= item.getFillFactor() && item.getTracking()) {
-        itemList.add(baseFromItem(item));
+        itemList.add(alertFromItem(item));
       }
     }
 
-    return itemList.toArray(new BaseItem[itemList.size()]);
+    return itemList.toArray(new AlertItem[itemList.size()]);
   }
 
   public Double getFillFactor(long itemType) {
     Double sum = 0.0;
     Integer count = 0;
     for (Item item : items.values()) {
-      if (itemType == item.getType()) {
+      if (itemType == item.getType() && (item.getFillFactor() > 0.0)) {
         sum += item.getFillFactor();
         count++;
       }
@@ -58,8 +58,8 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
     }
   }
 
-  private BaseItem baseFromItem(Item i) {
-    BaseItem b = new BaseItem();
+  private AlertItem alertFromItem(Item i) {
+    AlertItem b = new AlertItem();
     b.setFillFactor(i.getFillFactor());
     b.setType(i.getType());
     return b;
