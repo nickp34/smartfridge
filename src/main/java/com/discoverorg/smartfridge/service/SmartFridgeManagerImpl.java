@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.discoverorg.smartfridge.entity.AlertItem;
+import com.discoverorg.smartfridge.entity.DisplayItem;
 import com.discoverorg.smartfridge.entity.Item;
 
 public class SmartFridgeManagerImpl implements SmartFridgeManager {
 
+  /**
+   * Hashmap for storing items in the fridge
+   */
   HashMap<String, Item> items = new HashMap<>();
 
   public void handleItemRemoved(String itemUUID) {
@@ -26,8 +29,15 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
     items.put(itemUUID, i);
   }
 
+  /**
+   * The comment above the interface for this method did not make sense to me, but does make sense
+   * for the getFillFactor method.
+      * "Unless all available containers are empty, this method should only consider the
+      * non-empty containers when calculating the overall fillFactor for a given
+      * item"
+   */
   public Object[] getItems(Double fillFactor) {
-    List<AlertItem> itemList = new ArrayList<>();
+    List<DisplayItem> itemList = new ArrayList<>();
 
     for (Item item : items.values()) {
       if (fillFactor >= item.getFillFactor() && item.getTracking()) {
@@ -35,9 +45,10 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
       }
     }
 
-    return itemList.toArray(new AlertItem[itemList.size()]);
+    return itemList.toArray(new DisplayItem[itemList.size()]);
   }
 
+  /* I could filtered by getTracking but didn't only based on the comment above forgetItem */
   public Double getFillFactor(long itemType) {
     Double sum = 0.0;
     Integer count = 0;
@@ -47,7 +58,7 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
         count++;
       }
     }
-    return sum  / count;
+    return (count > 0) ? (sum / count) : 0.0;
   }
 
   public void forgetItem(long itemType) {
@@ -58,8 +69,13 @@ public class SmartFridgeManagerImpl implements SmartFridgeManager {
     }
   }
 
-  private AlertItem alertFromItem(Item i) {
-    AlertItem b = new AlertItem();
+  /**
+   * Transforms an item into a DisplayItem sent back by getItems
+   * @param i
+   * @return DisplayItem
+   */
+  private DisplayItem alertFromItem(Item i) {
+    DisplayItem b = new DisplayItem();
     b.setFillFactor(i.getFillFactor());
     b.setType(i.getType());
     return b;
