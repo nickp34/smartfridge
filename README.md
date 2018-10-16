@@ -8,7 +8,7 @@ java 1.8+
 
 ## Init
 ```
-git@github.com:nickp34/smartfridge.git
+git clone git@github.com:nickp34/smartfridge.git
 ```
 
 ## Build
